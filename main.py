@@ -7,8 +7,10 @@ from firebase_admin import db
 from PIL import Image
 from streamlit_lottie import st_lottie
 import requests
+import os
 
-cred = credentials.Certificate("firestore_key.json")
+path_to_key = os.path.join(os.path.dirname(__file__), 'firestore_key.json')
+cred = credentials.Certificate(path_to_key)
 # firebase_admin.initialize_app(cred, {
 #     'databaseURL': 'https://todolist-70940-default-rtdb.asia-southeast1.firebasedatabase.app/'
 # })
