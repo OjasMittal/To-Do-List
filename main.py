@@ -7,10 +7,7 @@ from firebase_admin import db
 from PIL import Image
 from streamlit_lottie import st_lottie
 import requests
-import os
 
-path_to_key = os.path.join(os.path.dirname(__file__), 'firestore_key.json')
-cred = credentials.Certificate(path_to_key)
 # firebase_admin.initialize_app(cred, {
 #     'databaseURL': 'https://todolist-70940-default-rtdb.asia-southeast1.firebasedatabase.app/'
 # })
@@ -30,12 +27,27 @@ firebaseConfig = {
     'appId': "1:695064566243:web:70267b2a5436495daba8d6",
     'measurementId': "G-0QP1KRX2V2"
 };
-
 firebase = initialize_app(firebaseConfig)
+# def create_cred_file():
+#     cred_str = '{"type": "' + st.secrets["type"] +\
+#                '", "project_id": "' + st.secrets["project_id"] +\
+#                '", "private_key_id": "' + st.secrets["private_key_id"] + \
+#                '", "private_key": "' + st.secrets["private_key"] + \
+#                '", "client_email": "' + st.secrets["client_email"] + \
+#                '", "client_id": "' + st.secrets["client_id"] + \
+#                ', "auth_uri": "' + st.secrets["auth_uri"] + \
+#                '", "token_uri": "' + st.secrets["token_uri"] + \
+#                ', "auth_provider_x509_cert_url": "' + st.secrets["auth_provider_x509_cert_url"] + \
+#                '", "client_x509_cert_url": "' + st.secrets["client_x509_cert_url"] + '"}'
+#     text_file = open("key.txt", "w")
+#     n = text_file.write(cred_str)
+#     text_file.close()
+# create_cred_file()
+cred = credentials.Certificate('firestore_key.json')
 auth = firebase.auth()
 #db = firebase.database()
 storage = firebase.storage()
-ref = db.reference()
+# ref = db.reference()
 @st.cache_data
 def convert_df(df):
     return df.to_csv().encode('utf-8')
