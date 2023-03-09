@@ -1,1 +1,2 @@
-!/firestore_key.json
+firestore_key.json
+!/.streamlit/secrets.toml

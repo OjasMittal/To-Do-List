@@ -7,10 +7,8 @@ from firebase_admin import db
 from PIL import Image
 from streamlit_lottie import st_lottie
 import requests
+import json
 
-# firebase_admin.initialize_app(cred, {
-#     'databaseURL': 'https://todolist-70940-default-rtdb.asia-southeast1.firebasedatabase.app/'
-# })
 def load_lottie_url(url: str):
     r = requests.get(url)
     if r.status_code != 200:
@@ -28,26 +26,14 @@ firebaseConfig = {
     'measurementId': "G-0QP1KRX2V2"
 };
 firebase = initialize_app(firebaseConfig)
-# def create_cred_file():
-#     cred_str = '{"type": "' + st.secrets["type"] +\
-#                '", "project_id": "' + st.secrets["project_id"] +\
-#                '", "private_key_id": "' + st.secrets["private_key_id"] + \
-#                '", "private_key": "' + st.secrets["private_key"] + \
-#                '", "client_email": "' + st.secrets["client_email"] + \
-#                '", "client_id": "' + st.secrets["client_id"] + \
-#                ', "auth_uri": "' + st.secrets["auth_uri"] + \
-#                '", "token_uri": "' + st.secrets["token_uri"] + \
-#                ', "auth_provider_x509_cert_url": "' + st.secrets["auth_provider_x509_cert_url"] + \
-#                '", "client_x509_cert_url": "' + st.secrets["client_x509_cert_url"] + '"}'
-#     text_file = open("key.txt", "w")
-#     n = text_file.write(cred_str)
-#     text_file.close()
-# create_cred_file()
-cred = credentials.Certificate('firestore_key.json')
+key_dict = json.loads(st.secrets["textkey"])
+
 auth = firebase.auth()
 #db = firebase.database()
 storage = firebase.storage()
 # ref = db.reference()
+cred = credentials.Certificate(key_dict)
+# firebase_admin.initialize_app(cred, firebaseConfig)
 @st.cache_data
 def convert_df(df):
     return df.to_csv().encode('utf-8')
@@ -80,10 +66,7 @@ st.sidebar.image("to_do_icon.jpg")
 choice = st.sidebar.selectbox('Login/SignUp', ['Login', 'Sign up'])
 email = st.sidebar.text_input("Enter your email address")
 password = st.sidebar.text_input("Enter your password", type="password")
-# with st.sidebar:
-#     lottie_animation_2 = "https://assets4.lottiefiles.com/packages/lf20_1pxqjqps.json"
-#     lottie_anime_json2 = load_lottie_url(lottie_animation_2)
-#     st_lottie(lottie_anime_json2, key = "hello")
+
 if choice == "Sign up":
     handle = st.sidebar.text_input("Please enter your nickname", value="Cool Panda")
     submit = st.sidebar.button('Create my Account')
@@ -107,12 +90,12 @@ st.info("Login through login option in the left drop down menu")
 if choice == "Login":
     login = st.sidebar.checkbox('Login')
     if login:
-        try:
-            user = auth.sign_in_with_email_and_password(email, password)
-            user_ref = db.reference(user['localId'])
-        except:
-            st.warning("Enter a valid email/password !")
-            st.stop()
+        # try:
+        user = auth.sign_in_with_email_and_password(email, password)
+        user_ref = db.reference(user['localId'])
+        # except:
+        #     st.warning("Enter a valid email/password !")
+        #     st.stop()
         if user_ref.get() is None:
             df = pd.DataFrame(
                 [
@@ -131,7 +114,6 @@ if choice == "Login":
         # if 'key' not in st.session_state:
         #     st.session_state['key'] = edited_df
         # st.session_state.key = edited_df
-
         #put 2 columns here
         col1,col2,col3,col4=st.columns(4)
         with col3:
