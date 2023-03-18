@@ -30,10 +30,18 @@ key_dict = json.loads(st.secrets["textkey"])
 
 auth = firebase.auth()
 #db = firebase.database()
-storage = firebase.storage()
 # ref = db.reference()
+storage = firebase.storage()
+
 cred = credentials.Certificate(key_dict)
-# firebase_admin.initialize_app(cred, firebaseConfig)
+
+if "first_boot" not in st.session_state:
+    st.session_state["first_boot"] = True
+
+if st.session_state["first_boot"]:
+    firebase_admin.initialize_app(cred, firebaseConfig)
+    st.session_state["first_boot"] = False
+
 @st.cache_data
 def convert_df(df):
     return df.to_csv().encode('utf-8')
@@ -60,7 +68,6 @@ with cola:
 st.sidebar.markdown(
         "<h1 style='text-align: center; '>WELCOME !</h1>",
         unsafe_allow_html=True)
-# st.sidebar.image("drop.png")
 st.sidebar.image("to_do_icon.jpg")
 
 choice = st.sidebar.selectbox('Login/SignUp', ['Login', 'Sign up'])
@@ -71,7 +78,7 @@ if choice == "Sign up":
     handle = st.sidebar.text_input("Please enter your nickname", value="Cool Panda")
     submit = st.sidebar.button('Create my Account')
     if submit:
-        try:
+         try:
             user = auth.create_user_with_email_and_password(email, password)
             st.success("Your account is created successfully!")
             st.balloons()
@@ -80,22 +87,20 @@ if choice == "Sign up":
             db.child(uid).child("Handle").set(handle)
             db.child(uid).child("Id").set(uid)
             st.title("Welcome " + handle + " !")
-        except:
-            st.info("This account already exists !")
-
-
+         except:
+            st.write("")
 
 st.info("Login through login option in the left drop down menu")
 
 if choice == "Login":
     login = st.sidebar.checkbox('Login')
     if login:
-        # try:
-        user = auth.sign_in_with_email_and_password(email, password)
-        user_ref = db.reference(user['localId'])
-        # except:
-        #     st.warning("Enter a valid email/password !")
-        #     st.stop()
+        try:
+            user = auth.sign_in_with_email_and_password(email, password)
+            user_ref = db.reference(user['localId'])
+        except:
+            st.warning("Create a new account or Enter a valid email/password !")
+            st.stop()
         if user_ref.get() is None:
             df = pd.DataFrame(
                 [
@@ -105,16 +110,14 @@ if choice == "Login":
                 ]
             )
             user_ref.set(df.to_dict())
+            data=df
         else:
             data_dict = user_ref.get()
             data = pd.DataFrame.from_dict(data_dict)
 
         edited_df = st.experimental_data_editor(data, use_container_width=True, num_rows="dynamic")
         csv = convert_df(edited_df)
-        # if 'key' not in st.session_state:
-        #     st.session_state['key'] = edited_df
-        # st.session_state.key = edited_df
-        #put 2 columns here
+
         col1,col2,col3,col4=st.columns(4)
         with col3:
             st.download_button(
@@ -128,8 +131,6 @@ if choice == "Login":
                 data_dict = edited_df.to_dict()
                 user_ref.set(data_dict)
                 st.write("Changes Saved!")
-
-
 
 st.write("")
 st.caption("Made with ❤️ by Ojas Mittal")
