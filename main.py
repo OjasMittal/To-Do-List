@@ -126,7 +126,8 @@ if choice == "Login":
         st.info('If new rows are created, make sure to check and then uncheck the "Completed" column to initialize them before saving the changes.')
         edited_df = st.experimental_data_editor(data, use_container_width=True, num_rows="dynamic")
         csv = convert_df(edited_df)
-
+        st.write("To add a new row press the (+) button at the bottom of the list")
+        st.write("To delete a row , select the checkbox on left of the row and press Delete key")
         col1,col2,col3,col4=st.columns(4)
         with col3:
             st.download_button(
