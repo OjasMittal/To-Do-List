@@ -66,7 +66,7 @@ with cola:
     lottie_anime_json2 = load_lottie_url(lottie_animation_2)
     st_lottie(lottie_anime_json2, key="hello")
 st.sidebar.markdown(
-        "<h1 style='text-align: center; '>WELCOME !</h1>",
+        "<h1 style='text-align: center; '>WELCOME! 👋</h1>",
         unsafe_allow_html=True)
 st.sidebar.image("to_do_icon.jpg")
 
