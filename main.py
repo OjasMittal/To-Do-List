@@ -39,7 +39,10 @@ if "first_boot" not in st.session_state:
     st.session_state["first_boot"] = True
 
 if st.session_state["first_boot"]:
-    firebase_admin.initialize_app(cred, firebaseConfig)
+    try:
+        firebase_admin.initialize_app(cred, firebaseConfig)
+    except ValueError:
+        pass
     st.session_state["first_boot"] = False
 
 @st.cache_data
@@ -49,13 +52,13 @@ def convert_df(df):
 img = Image.open('icon.png')
 st.set_page_config(page_title="To-Do-List", page_icon=img)
 
-hide_menu_style="""
-<style>
-#MainMenu{visibility:hidden;}
-footer{visibility:hidden;}
-</style>
-"""
-st.markdown(hide_menu_style,unsafe_allow_html=True)
+# hide_menu_style="""
+# <style>
+# #MainMenu{visibility:hidden;}
+# footer{visibility:hidden;}
+# </style>
+# """
+#st.markdown(hide_menu_style,unsafe_allow_html=True)
 st.title("***To- Do List Manager***")
 col1,col2=st.columns([6,2])
 cola,colb=col2.columns([3,1])
