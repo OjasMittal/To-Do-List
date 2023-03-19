@@ -89,18 +89,24 @@ if choice == "Sign up":
             st.title("Welcome " + handle + " !")
          except:
             st.write("")
-
-st.info("Login through login option in the left drop down menu")
+if 'login' not in st.session_state:
+    st.session_state['login'] = False
+if st.session_state["login"]==False:
+    st.info("Login through login option in the left drop down menu")
 
 if choice == "Login":
+    st.session_state["login"] = False
     login = st.sidebar.checkbox('Login')
     if login:
+        st.session_state["login"] = True
         try:
             user = auth.sign_in_with_email_and_password(email, password)
             user_ref = db.reference(user['localId'])
+
         except:
             st.warning("Create a new account or Enter a valid email/password !")
             st.stop()
+
         if user_ref.get() is None:
             df = pd.DataFrame(
                 [
@@ -114,7 +120,7 @@ if choice == "Login":
         else:
             data_dict = user_ref.get()
             data = pd.DataFrame.from_dict(data_dict)
-
+        st.info('If new rows are created, make sure to check and then uncheck the "Completed" column to initialize them before saving the changes.')
         edited_df = st.experimental_data_editor(data, use_container_width=True, num_rows="dynamic")
         csv = convert_df(edited_df)
 
